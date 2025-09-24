@@ -1576,6 +1576,17 @@ class SchedeValutazioneWindow(QWidget):
                 nome_json = tab_map.get(nome_ui)
                 if not nome_json or nome_json not in rules:
                     continue
+# --- PATCH: Escludi PRASSIE BLF se disabilitato ---
+                if nome_json == "PRASSIE BLF":
+                    # Se esiste un flag "abilitato" nella scheda e vale False, salta
+                    if "abilitato" in scheda and not scheda["abilitato"]:
+                        continue
+                    # Se tutte le combo sono "0" o vuote, salta (disabilitato/non editato)
+                    combos = scheda.get("combos", [])
+                    if not combos or all((str(v).strip() == "0" or not str(v).strip()) for v in combos):
+                        continue
+        # --- FINE PATCH ---
+
                 regole_scheda = rules[nome_json]
                 labels = labels_map.get(nome_json)
                 combos = scheda.get("combos", [])
