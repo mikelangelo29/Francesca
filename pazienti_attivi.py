@@ -220,20 +220,50 @@ class PazientiAttiviWindow(QWidget):
                 QMessageBox.warning(self, "Errore", "Compila nome e cognome!")
 
     def elimina_paziente(self):
+        import os, shutil
+        from PyQt5.QtWidgets import QMessageBox
+
         r = self.table.currentRow()
-        if r >= 0 and r < len(self.dati):
-            paziente = self.dati[r]
-            nome = paziente["nome"] if isinstance(paziente, dict) else paziente[0]
-            cognome = paziente["cognome"] if isinstance(paziente, dict) else paziente[1]
-            reply = QMessageBox.question(self, "Conferma eliminazione",
-                f"Eliminare definitivamente il paziente selezionato ({nome} {cognome})?",
-                QMessageBox.Yes | QMessageBox.No)
-            if reply == QMessageBox.Yes:
-                del self.dati[r]
-                self.salva_pazienti()
-                self.aggiorna_tabella()
-        else:
-            QMessageBox.information(self, "Seleziona paziente", "Seleziona un paziente dalla tabella.")
+        if r < 0 or r >= len(self.dati):
+            QMessageBox.information(
+                self, "Seleziona paziente", "Seleziona un paziente dalla tabella."
+            )
+            return
+
+        paziente = self.dati[r]
+        nome = paziente["nome"] if isinstance(paziente, dict) else paziente[0]
+        cognome = paziente["cognome"] if isinstance(paziente, dict) else paziente[1]
+
+        reply = QMessageBox.question(
+            self,
+            "Conferma eliminazione",
+            f"Eliminare definitivamente il paziente selezionato ({nome} {cognome})?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if reply != QMessageBox.Yes:
+            return
+
+        # 🔹 elimina dal JSON e aggiorna GUI (identico alla vecchia versione)
+        del self.dati[r]
+        self.salva_pazienti()
+        self.aggiorna_tabella()
+
+        # 🔹 cerca ed elimina le cartelle dopo il salvataggio
+        base = "pazienti"
+        prefix = f"{nome}_{cognome}_"
+        if os.path.exists(base):
+            for d in os.listdir(base):
+                if d.startswith(prefix):
+                    p = os.path.join(base, d)
+                    if os.path.isdir(p):
+                        try:
+                            shutil.rmtree(p)
+                        except Exception as e:
+                            QMessageBox.warning(
+                                self, "Errore eliminazione", f"Impossibile eliminare {p}:\n{e}"
+                            )
+
 
     def apri_scheda(self, riga):
         self.table.clearSelection()
