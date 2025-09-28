@@ -26,14 +26,26 @@ os.makedirs(CARTELLA_PAZIENTI, exist_ok=True)
 
 class SchedaPazienteWindow(QWidget):
     def __init__(self, nome, cognome, eta,
-                 valutazioni_aperte=None, valutazioni_completate=None,
-                 report_indici=None, report_completi=None, grafici=None):
+                valutazioni_aperte=None, valutazioni_completate=None,
+                report_indici=None, report_completi=None, grafici=None,
+                cartella_path=None, sola_lettura=False,
+                percorso_base="pazienti"):
         super().__init__()
         self.setWindowTitle(f"Scheda di {nome} {cognome}")
         self.resize(650, 700)
         self.nome = nome
         self.cognome = cognome
         self.eta = eta
+        self.sola_lettura = sola_lettura
+        self.percorso_base = percorso_base
+
+        if cartella_path:
+            self.cartella_paziente = cartella_path
+        else:
+            self.cartella_paziente = os.path.join(self.percorso_base, f"{self.nome}_{self.cognome}_{self.eta}a")
+
+        print("DEBUG cartella paziente:", self.cartella_paziente)
+        # ... continua con il resto della tua __init__ ...
 
         # valori di default se non passati
         if valutazioni_aperte is None:
@@ -108,6 +120,9 @@ class SchedaPazienteWindow(QWidget):
         btn_layout.addWidget(self.nuova_valutazione_btn)
         btn_layout.addStretch()
         layout.addLayout(btn_layout)
+        if self.sola_lettura:         # <-- POI QUESTO BLOCCO
+            self.nuova_valutazione_btn.setEnabled(False)
+            self.elimina_btn.setEnabled(False)
 
         self.apri_cartella_btn = QPushButton("Apri cartella paziente")
         self.apri_cartella_btn.setStyleSheet("background:#1976d2; color:white; font-weight:bold; font-size:15px; padding:12px 22px")

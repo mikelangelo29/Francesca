@@ -1,0 +1,188 @@
+{
+  "valutazioni_aperte": [],
+  "valutazioni_completate": [
+    {
+      "timestamp": "26/09/2025 19:17",
+      "schede": [
+        {
+          "nome": "Dati Anamnestici",
+          "combos": [
+            "risposta localizzata",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "note": ""
+        },
+        {
+          "nome": "Osservazione",
+          "combos": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "descrizioni": {
+            "Residui alimentari orali:": "",
+            "Cannula tracheale:": "",
+            "Controllo posturale:": "",
+            "Scialorrea:": "",
+            "Deficit visivi:": "",
+            "Deficit uditivi:": "",
+            "Presenza di neglect:": "",
+            "Presenza di disartria:": ""
+          },
+          "note": ""
+        },
+        {
+          "nome": "Valutazione Morfo-Dinamica",
+          "combos": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "descrizioni": {
+            "Labbra protrusione descrizione": "",
+            "Labbra retrazione descrizione": "",
+            "Labbra descrizione generale": "",
+            "Lingua protrusione descrizione": "",
+            "Lingua retropulsione descrizione": "",
+            "Lingua lateralizzazione dx descrizione": "",
+            "Lingua lateralizzazione sx descrizione": "",
+            "Lingua trofismo descrizione": "",
+            "Lingua forza descrizione": "",
+            "Lingua velocità descrizione": "",
+            "Lingua ampiezza descrizione": "",
+            "Palato duro descrizione": "",
+            "Velo elevazione descrizione": "",
+            "Mandibola descrizione": "",
+            "Elevazione laringe descrizione": ""
+          },
+          "note": ""
+        },
+        {
+          "nome": "Prassie BLF",
+          "combos": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "note": "",
+          "punteggio": "TOTALE: 0/20"
+        },
+        {
+          "nome": "Bedside Swallowing Assessment",
+          "combos": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "nome": "Osservazione del Pasto",
+          "combos": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "note": ""
+        },
+        {
+          "nome": "Autovalutazione (GETS)",
+          "combos": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ],
+          "note": ""
+        },
+        {
+          "nome": "Conclusioni",
+          "combos": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "note": ""
+        }
+      ]
+    }
+  ],
+  "report_indici": [],
+  "report_completi": [],
+  "grafici": []
+}

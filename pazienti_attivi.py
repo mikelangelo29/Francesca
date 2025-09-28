@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QDate
 from functools import partial
 from datetime import datetime
 from scheda_paziente import SchedaPazienteWindow
+import shutil
 
 DATA_FILE = "pazienti.json"
 
@@ -81,6 +82,10 @@ class PazientiAttiviWindow(QWidget):
         self.elimina_btn = QPushButton("Elimina selezionato")
         self.elimina_btn.setStyleSheet("font-size:13px; background:#e53935; color:white; padding:2px 11px; border-radius:6px;")
         self.elimina_btn.clicked.connect(self.elimina_paziente)
+        self.dimetti_btn = QPushButton("Dimetti paziente")
+        self.dimetti_btn.setStyleSheet("font-size:13px; background:#ffa726; color:white; padding:2px 11px; border-radius:6px;")
+        self.dimetti_btn.clicked.connect(self.dimetti_paziente)
+        btn_layout.addWidget(self.dimetti_btn)
         btn_layout.addWidget(self.nuovo_btn)
         btn_layout.addWidget(self.elimina_btn)
         btn_layout.addStretch()
@@ -263,6 +268,55 @@ class PazientiAttiviWindow(QWidget):
                             QMessageBox.warning(
                                 self, "Errore eliminazione", f"Impossibile eliminare {p}:\n{e}"
                             )
+
+    def dimetti_paziente(self):
+        r = self.table.currentRow()
+        if r >= 0 and r < len(self.dati):
+            paziente = self.dati[r]
+            nome = paziente["nome"] if isinstance(paziente, dict) else paziente[0]
+            cognome = paziente["cognome"] if isinstance(paziente, dict) else paziente[1]
+            nascita = paziente["data_nascita"] if isinstance(paziente, dict) else paziente[2]
+            eta = self.calcola_eta(nascita)
+            cartella_orig = os.path.join("pazienti", f"{nome}_{cognome}_{eta}a")
+            cartella_dest = os.path.join("dimessi", f"{nome}_{cognome}_{eta}a")
+
+            reply = QMessageBox.question(
+                self,
+                "Conferma dimissione",
+                f"Dimettere il paziente selezionato ({nome} {cognome})?\nLa sua cartella sarà spostata tra i pazienti dimessi.",
+                QMessageBox.Yes | QMessageBox.No
+            )
+
+            if reply == QMessageBox.Yes:
+                # Rimuovi dagli attivi
+                paziente_dimesso = self.dati.pop(r)
+                self.salva_pazienti()
+                self.aggiorna_tabella()
+
+                # Aggiorna elenco dimessi
+                file_dimessi = "pazienti_dimessi.json"
+                dimessi = []
+                if os.path.exists(file_dimessi):
+                    with open(file_dimessi, "r", encoding="utf-8") as f:
+                        try:
+                            dimessi = json.load(f)
+                        except Exception:
+                            dimessi = []
+                dimessi.append(paziente_dimesso)
+                with open(file_dimessi, "w", encoding="utf-8") as f:
+                    json.dump(dimessi, f, ensure_ascii=False, indent=2)
+
+                # Sposta la cartella
+                os.makedirs("dimessi", exist_ok=True)
+                if os.path.exists(cartella_orig):
+                    try:
+                        shutil.move(cartella_orig, cartella_dest)
+                    except Exception as e:
+                        QMessageBox.warning(self, "Errore", f"Errore spostando la cartella dati:\n{e}")
+
+                QMessageBox.information(self, "Paziente dimesso", f"{nome} {cognome} è stato dimesso e spostato tra i pazienti dimessi.")
+        else:
+            QMessageBox.information(self, "Seleziona paziente", "Seleziona un paziente dalla tabella.")
 
 
     def apri_scheda(self, riga):
