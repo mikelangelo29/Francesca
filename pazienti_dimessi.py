@@ -60,7 +60,7 @@ class PazientiDimessiWindow(QWidget):
         super().__init__()
         self.dati = self.carica_pazienti_dimessi()
         self.setWindowTitle("Pazienti Dimessi")
-        self.setMinimumWidth(750)
+        self.setMinimumWidth(900)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -79,6 +79,11 @@ class PazientiDimessiWindow(QWidget):
         self.elimina_btn.clicked.connect(self.elimina_paziente)
         btn_layout.addWidget(self.elimina_btn)
         btn_layout.addStretch()
+        self.aggiorna_btn = QPushButton("Aggiorna Tabella")
+        self.aggiorna_btn.setStyleSheet("font-size:14px; background:#1976d2; color:white; padding:3px 12px; border-radius:6px;")
+        self.aggiorna_btn.clicked.connect(self.aggiorna_dati_dimessi)
+        btn_layout.addWidget(self.aggiorna_btn)
+
         layout.addLayout(btn_layout)
 
         
@@ -115,7 +120,7 @@ class PazientiDimessiWindow(QWidget):
 
     
     def carica_pazienti_dimessi(self):
-        file_dimessi = "pazienti_dimessi.json"
+        file_dimessi = "dimessi.json"
         if os.path.exists(file_dimessi):
             with open(file_dimessi, "r", encoding="utf-8") as f:
                 try:
@@ -156,6 +161,10 @@ class PazientiDimessiWindow(QWidget):
             cell_layout.addWidget(btn)
             cell_layout.setAlignment(Qt.AlignRight)
             self.table.setCellWidget(riga, 4, cell_widget)
+   
+    def aggiorna_dati_dimessi(self):
+        self.dati = self.carica_pazienti_dimessi()
+        self.aggiorna_tabella()
 
     def nuovo_paziente(self):
         dlg = NuovoPazienteDialog(self)
@@ -209,11 +218,11 @@ class PazientiDimessiWindow(QWidget):
         # 2. Riscrivi il file pazienti_dimessi.json
         try:
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            json_path = os.path.join(base_dir, "pazienti_dimessi.json")
+            json_path = os.path.join(base_dir, "dimessi.json")
             with open(json_path, "w", encoding="utf-8") as f:
                 json.dump(self.dati, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            QMessageBox.warning(self, "Errore", f"Impossibile aggiornare pazienti_dimessi.json:\n{e}")
+            QMessageBox.warning(self, "Errore", f"Impossibile aggiornare dimessi.json:\n{e}")
             return
 
         # 3. Aggiorna la tabella GUI

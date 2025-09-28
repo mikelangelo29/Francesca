@@ -9,6 +9,7 @@ from functools import partial
 from datetime import datetime
 from scheda_paziente import SchedaPazienteWindow
 import shutil
+from pazienti_dimessi import PazientiDimessiWindow
 
 DATA_FILE = "pazienti.json"
 
@@ -61,7 +62,7 @@ class PazientiAttiviWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Pazienti Attivi")
-        self.setMinimumWidth(750)
+        self.setMinimumWidth(900)
         self.setMinimumHeight(320)
 
         self.dati = self.carica_pazienti()
@@ -90,6 +91,10 @@ class PazientiAttiviWindow(QWidget):
         btn_layout.addWidget(self.elimina_btn)
         btn_layout.addStretch()
         layout.addLayout(btn_layout)
+        self.visualizza_dimessi_btn = QPushButton("Visualizza Dimessi")
+        self.visualizza_dimessi_btn.setStyleSheet("font-size:13px; background:#1976d2; color:white; padding:2px 11px; border-radius:6px;")
+        self.visualizza_dimessi_btn.clicked.connect(self.apri_finestra_dimessi)
+        btn_layout.addWidget(self.visualizza_dimessi_btn)
 
         self.table = QTableWidget()
         self.table.setColumnCount(5)
@@ -162,6 +167,10 @@ class PazientiAttiviWindow(QWidget):
     def salva_pazienti(self):
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(self.dati, f, ensure_ascii=False, indent=2)
+
+    def apri_finestra_dimessi(self):
+        self.window_dimessi = PazientiDimessiWindow()
+        self.window_dimessi.show()
 
     def aggiorna_tabella(self):
         self.table.setRowCount(len(self.dati))
@@ -304,6 +313,8 @@ class PazientiAttiviWindow(QWidget):
 
         self.aggiorna_tabella()
 
+        if hasattr(self, 'window_dimessi'):
+            self.window_dimessi.aggiorna_dati_dimessi()
 
     def apri_scheda(self, riga):
         self.table.clearSelection()
