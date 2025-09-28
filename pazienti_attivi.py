@@ -269,54 +269,40 @@ class PazientiAttiviWindow(QWidget):
                                 self, "Errore eliminazione", f"Impossibile eliminare {p}:\n{e}"
                             )
 
+    import os
+    import shutil
+
     def dimetti_paziente(self):
-        r = self.table.currentRow()
-        if r >= 0 and r < len(self.dati):
-            paziente = self.dati[r]
-            nome = paziente["nome"] if isinstance(paziente, dict) else paziente[0]
-            cognome = paziente["cognome"] if isinstance(paziente, dict) else paziente[1]
-            nascita = paziente["data_nascita"] if isinstance(paziente, dict) else paziente[2]
-            eta = self.calcola_eta(nascita)
-            cartella_orig = os.path.join("pazienti", f"{nome}_{cognome}_{eta}a")
-            cartella_dest = os.path.join("dimessi", f"{nome}_{cognome}_{eta}a")
+        riga = self.table.currentRow()
+        if riga < 0:
+            QMessageBox.warning(self, "Selezione", "Seleziona un paziente da dimettere.")
+            return
 
-            reply = QMessageBox.question(
-                self,
-                "Conferma dimissione",
-                f"Dimettere il paziente selezionato ({nome} {cognome})?\nLa sua cartella sarà spostata tra i pazienti dimessi.",
-                QMessageBox.Yes | QMessageBox.No
-            )
+        paziente = self.dati.pop(riga)
+        self.salva_pazienti()
 
-            if reply == QMessageBox.Yes:
-                # Rimuovi dagli attivi
-                paziente_dimesso = self.dati.pop(r)
-                self.salva_pazienti()
-                self.aggiorna_tabella()
+        # aggiungi a dimessi.json
+        dimessi = []
+        if os.path.exists("dimessi.json"):
+            with open("dimessi.json", "r", encoding="utf-8") as f:
+                dimessi = json.load(f)
+        dimessi.append(paziente)
+        with open("dimessi.json", "w", encoding="utf-8") as f:
+            json.dump(dimessi, f, indent=2, ensure_ascii=False)
 
-                # Aggiorna elenco dimessi
-                file_dimessi = "pazienti_dimessi.json"
-                dimessi = []
-                if os.path.exists(file_dimessi):
-                    with open(file_dimessi, "r", encoding="utf-8") as f:
-                        try:
-                            dimessi = json.load(f)
-                        except Exception:
-                            dimessi = []
-                dimessi.append(paziente_dimesso)
-                with open(file_dimessi, "w", encoding="utf-8") as f:
-                    json.dump(dimessi, f, ensure_ascii=False, indent=2)
+        # sposta cartella
+        eta = self.calcola_eta(paziente["data_nascita"])
+        src = os.path.join("pazienti", f"{paziente['nome']}_{paziente['cognome']}_{eta}a")
+        dst = os.path.join("dimessi", f"{paziente['nome']}_{paziente['cognome']}_{eta}a")
+        try:
+            if os.path.exists(src):
+                shutil.move(src, dst)
+            else:
+                print(f"Attenzione: la cartella {src} non esiste.")
+        except Exception as e:
+            print(f"Errore durante lo spostamento della cartella: {e}")
 
-                # Sposta la cartella
-                os.makedirs("dimessi", exist_ok=True)
-                if os.path.exists(cartella_orig):
-                    try:
-                        shutil.move(cartella_orig, cartella_dest)
-                    except Exception as e:
-                        QMessageBox.warning(self, "Errore", f"Errore spostando la cartella dati:\n{e}")
-
-                QMessageBox.information(self, "Paziente dimesso", f"{nome} {cognome} è stato dimesso e spostato tra i pazienti dimessi.")
-        else:
-            QMessageBox.information(self, "Seleziona paziente", "Seleziona un paziente dalla tabella.")
+        self.aggiorna_tabella()
 
 
     def apri_scheda(self, riga):
